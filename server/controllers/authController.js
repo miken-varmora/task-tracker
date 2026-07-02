@@ -132,12 +132,37 @@ const loginUser = async (req,res) => {
     }
 }
 
-const profileUser = (req,res) => {
-    res.json({
-        success:true,
-        message:"Successfully run APIs"
-    })
+const profileUser = async (req,res) => {
+    try {
+        // Step 1: get user from database 
+        const user = await userModel.findById(req.user.id).select('-password')
 
+        // Step 2: check user is exist or not
+        if(!user){
+            return res.status(404).json({
+                success:false,
+                message:'Login required'
+            })
+        }
+
+        // Step 3: response
+        res.status(200).json({
+            success: true,
+            message:'Successfully',
+            data:{
+                id: user._id,
+                name:user.name,
+                email:user.email
+            }
+        })
+    } catch (error) {
+        console.log(error.message)
+
+        res.status(500).json({
+            success:false,
+            message:'server error'
+        })
+    }
 }
 
 export default {registerUser,loginUser,profileUser}
