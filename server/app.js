@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import authRouter from './routes/authRoutes.js'
+import taskRouter from './routes/taskRoutes.js'
 
 const app = express()
 
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routers
 app.use('/api/auth',authRouter)
+app.use('/api/task',taskRouter)
 
 app.get('/',(req,res) => {
     res.json({
