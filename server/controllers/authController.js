@@ -71,8 +71,6 @@ const loginUser = async (req,res) => {
         // Step 1: get data from frotend or user
         const {email,password} = req.body
 
-        console.log(req.body)
-
         // Step 2: check all field are coming
         if(!email || !password) {
             return res.status(400).json({

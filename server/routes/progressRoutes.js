@@ -7,5 +7,6 @@ const router = express.Router()
 router.post('/',authMiddleware,progressController.markProgress)
 router.get('/week',authMiddleware,progressController.getWeeklyProgress)
 router.get('/month',authMiddleware,progressController.getMonthlyProgress)
+router.get('/month/:id',authMiddleware,progressController.getIndividualMonthlyProgress)
 
 export default router

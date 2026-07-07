@@ -157,4 +157,74 @@ const getMonthlyProgress = async (req, res) => {
     }
 }
 
-export default { markProgress, getMonthlyProgress, getWeeklyProgress }
+const getIndividualMonthlyProgress = async (req,res) => {
+    try {
+        const id = req.params.id
+
+        const today = new Date()
+
+        const startOfMonth = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            1
+        )
+        startOfMonth.setHours(0,0,0,0)
+
+        const endOfMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() + 1,
+            0
+        )
+        endOfMonth.setHours(23,59,59,999)
+
+        const task = await taskModel.findById(id)
+
+        if(!task){
+            return res.status(404).json({
+                success:false,
+                message:'task not found'
+            })
+        }
+
+        if(task.user.toString() !== req.user.id){
+            return res.status(403).json({
+                success:false,
+                message:'unathorized user'
+            })
+        }
+
+        const progress = await progressModel.find({
+            user:req.user.id,
+            task:id,
+            date:{
+                $gte:startOfMonth,
+                $lte:endOfMonth
+            }
+        }).populate('task')
+
+        const total = progress.length
+
+        const completed = progress.filter(item => item.completed).length
+
+        const percentage = total === 0 ? 0 : Math.round((completed/total) * 100)
+
+        res.status(200).json({
+            success:true,
+            message:'task get',
+            total:total,
+            completed,
+            percentage,
+            progress
+        })
+
+    } catch (error) {
+        console.log(error.message)
+
+        res.status(500).json({
+            success:false,
+            message:'server error'
+        })
+    }
+}
+
+export default { markProgress, getMonthlyProgress, getWeeklyProgress, getIndividualMonthlyProgress }
